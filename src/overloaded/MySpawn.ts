@@ -22,7 +22,7 @@ class MySpawn extends Spawn {
 
       console.log("spawning miner: " + uniqueIdNumber + " in room: " + this.room.name);
       var message = this.spawnCreep(this.tempMinerAttributes, "Harvester" + uniqueIdNumber, {
-        memory: { role: ROLES.MINER, room: this.name, working: true }
+        memory: { role: ROLES.MINER, room: this.room.name, working: true }
       });
       console.log(message);
     }
