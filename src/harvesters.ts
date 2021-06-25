@@ -1,7 +1,7 @@
 const HARVESTER = "harvester";
 const HARVESTER_MOVE_COLOR = "#ffaa00";
 const HARVESTER_PER_SOURCE = 1;
-const HARVESTER_SPAWN_ENERGY_REQUIREMENT = 200;
+const HARVESTER_SPAWN_ENERGY_REQUIREMENT = 300;
 const HARVESTER_ATTRIBUTES = [WORK, CARRY, CARRY, MOVE, MOVE];
 
 var MyRooms = () => {
@@ -14,7 +14,7 @@ var MyRooms = () => {
   return RoomList;
 };
 
-var GetMyHarvesters = myCreepsInRoom => {
+var GetMyHarvesters = (myCreepsInRoom: Creep[]): Creep[] => {
   var CreepList = [];
   for (var creepname in myCreepsInRoom) {
     if (myCreepsInRoom[creepname].memory.role === HARVESTER) {
@@ -24,7 +24,7 @@ var GetMyHarvesters = myCreepsInRoom => {
   return CreepList;
 };
 
-var SpawnHarvesters = (harvesters, spawn, roomSources, room) => {
+var SpawnHarvesters = (harvesters: Creep[], spawn: StructureSpawn, roomSources: Source[], room: Room) => {
   if (
     harvesters.length < roomSources.length * HARVESTER_PER_SOURCE &&
     spawn.room.energyAvailable > HARVESTER_SPAWN_ENERGY_REQUIREMENT
@@ -33,16 +33,16 @@ var SpawnHarvesters = (harvesters, spawn, roomSources, room) => {
     var uniqueIdNumber = Game.time.toString();
 
     console.log("spawning harvester: " + uniqueIdNumber + " in room: " + spawn.room.name);
-    var cost = BODYPART_COST.move;
     var message = spawn.spawnCreep(HARVESTER_ATTRIBUTES, "Harvester" + uniqueIdNumber, {
-      memory: { role: HARVESTER, source: roomSources[havesterNumber % roomSources.length].id }
+      memory: { role: HARVESTER, room: room.name, working: true }
     });
     console.log(message);
   }
 };
 
-var MoveToSource = creep => {
-  var source = Game.getObjectById(creep.memory.source);
+var MoveToSource = (creep: Creep, spawn: StructureSpawn) => {
+  var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+  if (source === null) return;
   var hostiles = creep.room.find(FIND_HOSTILE_CREEPS)[0];
   if (hostiles && hostiles.pos.isNearTo(source)) {
     console.log("Creep " + creep.name + " source is near hostile.. waiting");
@@ -51,11 +51,12 @@ var MoveToSource = creep => {
   }
 };
 
-var DeliverSources = (creep, spawn, room) => {
+var DeliverSources = (creep: Creep, spawn: StructureSpawn, room: Room) => {
   var roomEnergy = room.energyAvailable;
   var roomEnergyCapacity = room.energyCapacityAvailable;
-  if (roomEnergy === roomEnergyCapacity) {
-    var controller = room.controller;
+  var controller = room.controller;
+  if (roomEnergy === roomEnergyCapacity && room.controller !== undefined) {
+    controller = controller as StructureController;
     creep.moveTo(controller, { visualizePathStyle: { stroke: HARVESTER_MOVE_COLOR } });
     creep.upgradeController(controller);
   } else {
@@ -66,12 +67,12 @@ var DeliverSources = (creep, spawn, room) => {
 };
 
 // could need an upgrade to find closests spawn
-var HarvestersFarm = (harvesters, collectionSpawn, room) => {
+var HarvestersFarm = (harvesters: Creep[], spawn: StructureSpawn, room: Room) => {
   harvesters.forEach(creep => {
     if (creep.store.getFreeCapacity() > 0) {
-      MoveToSource(creep);
+      MoveToSource(creep, spawn);
     } else {
-      DeliverSources(creep, collectionSpawn, room);
+      DeliverSources(creep, spawn, room);
     }
   });
 };
@@ -88,4 +89,4 @@ var ManageHarvesters = () => {
   });
 };
 
-exports.ManageHarvesters = ManageHarvesters;
+export { ManageHarvesters };
