@@ -66,7 +66,13 @@ var DeliverSources = (creep: Creep, spawn: StructureSpawn, room: Room) => {
 // could need an upgrade to find closests spawn
 var HarvestersFarm = (harvesters: Creep[], spawn: StructureSpawn, room: Room) => {
   harvesters.forEach(creep => {
-    if (creep.store.getUsedCapacity() === 0) {
+    const s = creep.store;
+    if (s.getUsedCapacity() === 0) {
+      creep.memory.working = true;
+    } else if (s.getUsedCapacity() === s.getCapacity()) {
+      creep.memory.working = false;
+    }
+    if (creep.memory.working) {
       MoveToSource(creep, spawn);
     } else {
       DeliverSources(creep, spawn, room);
