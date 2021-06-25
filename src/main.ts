@@ -1,4 +1,4 @@
-import { ManageHarvesters } from "harvesters";
+import { ManageHarvesters } from "creeps/harvesters";
 import { ErrorMapper } from "utils/ErrorMapper";
 
 declare global {
