@@ -1,5 +1,6 @@
-import { ManageHarvesters } from "creeps/harvesters";
+import { Miner } from "overloaded/Miner";
 import { ErrorMapper } from "utils/ErrorMapper";
+import { MySpawn } from "overloaded/MySpawn";
 
 declare global {
   /*
@@ -32,7 +33,9 @@ declare global {
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
+
 export const loop = ErrorMapper.wrapLoop(() => {
+  var miners = [] as Miner[];
   // console.log(`Current game tick is ${Game.time}`);
 
   // Automatically delete memory of missing creeps
@@ -41,5 +44,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
       delete Memory.creeps[name];
     }
   }
-  ManageHarvesters();
+
+  for (const name in Game.creeps) {
+    const creep = Game.creeps[name];
+    const role = creep.memory.role;
+    if (role === "miner") miners.push(new Miner(Game.creeps[name].id));
+  }
+
+  for (const name in Game.rooms) {
+    const room = Game.rooms[name];
+    var spawns = room.find(FIND_MY_SPAWNS);
+    spawns.forEach(spawn => {
+      new MySpawn(spawn.id, miners);
+    });
+  }
 });
