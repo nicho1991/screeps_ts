@@ -1,5 +1,6 @@
 import { MyCreep } from "./MyCreep";
 
+// TODO select other source if enemy is close
 class Miner extends MyCreep {
   private closestSource: Source | null;
   private hostilesCloseToSource: boolean;

@@ -1,12 +1,12 @@
 import { ROLES } from "../constants";
 import { Miner } from "./Miner";
 
+// TODO remove temps and make more dynamic
 class MySpawn extends Spawn {
   private roomMiners: Miner[];
   private tempMinersAmount = 2;
   private tempEnergyRequirement = 300;
   private tempMinerAttributes = [WORK, CARRY, CARRY, MOVE, MOVE];
-  private minerRole = "miner";
   constructor(id: Id<StructureSpawn>, miners: Miner[]) {
     super(id);
     this.roomMiners = [];
