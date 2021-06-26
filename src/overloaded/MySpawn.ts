@@ -38,6 +38,8 @@ class MySpawn extends Spawn {
   private tempHaulersEnergyRequirement = 300;
   private tempHaulerAttributes = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
 
+  private needMiners = true;
+
   constructor(
     id: Id<StructureSpawn>,
     miners: Miner[],
@@ -77,7 +79,12 @@ class MySpawn extends Spawn {
     haulers.forEach(hauler => {
       if (hauler.memory.room === this.room.name) this.roomHaulers.push(hauler);
     });
-    this.spawnMiners();
+
+    if (haulers.length > 0 && staticMiners.length > 0) {
+      this.needMiners = false;
+    }
+
+    if (this.needMiners) this.spawnMiners();
     this.spawnUpgraders();
     this.spawnBuilders();
     this.spawnRepairers();
@@ -121,7 +128,7 @@ class MySpawn extends Spawn {
   };
 
   private spawnRepairers = () => {
-    if (this.roomMiners.length > 0)
+    if (this.roomMiners.length > 0 || !this.needMiners)
       if (
         this.roomRepairers.length < this.tempRepairersAmount &&
         this.room.energyAvailable >= this.tempRepairerEnergyRequirement
@@ -137,7 +144,7 @@ class MySpawn extends Spawn {
   };
 
   private spawnBuilders = () => {
-    if (this.roomMiners.length > 0)
+    if (this.roomMiners.length > 0 || !this.needMiners)
       if (
         this.roomBuilders.length < this.tempBuildersAmount &&
         this.room.energyAvailable >= this.tempBuildersEnergyRequirement
@@ -153,7 +160,7 @@ class MySpawn extends Spawn {
   };
 
   private spawnUpgraders = () => {
-    if (this.roomMiners.length > 0)
+    if (this.roomMiners.length > 0 || !this.needMiners)
       if (
         this.roomUpgraders.length < this.tempUpgradersAmount &&
         this.room.energyAvailable >= this.tempUpgraderEnergyRequirement

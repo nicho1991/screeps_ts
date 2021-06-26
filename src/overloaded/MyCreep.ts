@@ -34,8 +34,13 @@ class MyCreep extends Creep {
   public getResources = () => {
     if (this.withEnergyState) return;
     const energies = this.spawnRoom
-      .find(FIND_MY_STRUCTURES)
-      .filter(x => x.structureType === STRUCTURE_EXTENSION || x.structureType === STRUCTURE_SPAWN)
+      .find(FIND_STRUCTURES)
+      .filter(
+        x =>
+          x.structureType === STRUCTURE_EXTENSION ||
+          x.structureType === STRUCTURE_SPAWN ||
+          x.structureType === STRUCTURE_CONTAINER
+      )
       .filter(x => {
         x = x as StructureSpawn;
         return x.store?.getFreeCapacity(RESOURCE_ENERGY) === 0;
