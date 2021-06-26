@@ -1,6 +1,8 @@
 import { Miner } from "overloaded/Miner";
 import { ErrorMapper } from "utils/ErrorMapper";
 import { MySpawn } from "overloaded/MySpawn";
+import { ROLES } from "./constants";
+import { Upgrader } from "overloaded/Upgrader";
 
 declare global {
   /*
@@ -20,7 +22,7 @@ declare global {
   interface CreepMemory {
     role: string;
     room: string;
-    working: boolean;
+    withEnergyState: boolean;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -36,6 +38,7 @@ declare global {
 
 export const loop = ErrorMapper.wrapLoop(() => {
   var miners = [] as Miner[];
+  var upgraders = [] as Upgrader[];
   // console.log(`Current game tick is ${Game.time}`);
 
   // Automatically delete memory of missing creeps
@@ -48,14 +51,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
     const role = creep.memory.role;
-    if (role === "miner") miners.push(new Miner(Game.creeps[name].id));
+    if (role === ROLES.MINER) miners.push(new Miner(Game.creeps[name].id));
+    if (role === ROLES.UPGRADER) upgraders.push(new Upgrader(Game.creeps[name].id));
   }
 
   for (const name in Game.rooms) {
     const room = Game.rooms[name];
     var spawns = room.find(FIND_MY_SPAWNS);
     spawns.forEach(spawn => {
-      new MySpawn(spawn.id, miners);
+      new MySpawn(spawn.id, miners, upgraders);
     });
   }
 });
