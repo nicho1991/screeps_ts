@@ -1,6 +1,8 @@
 var ROLES = {
   MINER: "miner",
-  UPGRADER: "upgrader"
+  UPGRADER: "upgrader",
+  BUILDER: "builder",
+  REPAIRER: "repairer"
 };
 
 export { ROLES };

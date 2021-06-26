@@ -3,6 +3,8 @@ import { ErrorMapper } from "utils/ErrorMapper";
 import { MySpawn } from "overloaded/MySpawn";
 import { ROLES } from "./constants";
 import { Upgrader } from "overloaded/Upgrader";
+import { Builder } from "overloaded/Builder";
+import { Repairer } from "overloaded/Repairer";
 
 declare global {
   /*
@@ -39,6 +41,8 @@ declare global {
 export const loop = ErrorMapper.wrapLoop(() => {
   var miners = [] as Miner[];
   var upgraders = [] as Upgrader[];
+  var builders = [] as Builder[];
+  var repairers = [] as Repairer[];
   // console.log(`Current game tick is ${Game.time}`);
 
   // Automatically delete memory of missing creeps
@@ -53,13 +57,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const role = creep.memory.role;
     if (role === ROLES.MINER) miners.push(new Miner(Game.creeps[name].id));
     if (role === ROLES.UPGRADER) upgraders.push(new Upgrader(Game.creeps[name].id));
+    if (role === ROLES.BUILDER) builders.push(new Builder(Game.creeps[name].id));
+    if (role === ROLES.REPAIRER) repairers.push(new Repairer(Game.creeps[name].id));
   }
 
   for (const name in Game.rooms) {
     const room = Game.rooms[name];
     var spawns = room.find(FIND_MY_SPAWNS);
     spawns.forEach(spawn => {
-      new MySpawn(spawn.id, miners, upgraders);
+      new MySpawn(spawn.id, miners, upgraders, builders, repairers);
     });
   }
 });

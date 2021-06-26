@@ -1,6 +1,5 @@
 import { MyCreep } from "./MyCreep";
 
-// TODO select other source if enemy is close
 class Miner extends MyCreep {
   constructor(id: Id<Creep>) {
     super(id);
