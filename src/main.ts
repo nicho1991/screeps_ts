@@ -5,6 +5,8 @@ import { ROLES } from "./constants";
 import { Upgrader } from "overloaded/Upgrader";
 import { Builder } from "overloaded/Builder";
 import { Repairer } from "overloaded/Repairer";
+import { StaticMiner } from "overloaded/StaticMiner";
+import { Hauler } from "overloaded/Hauler";
 
 declare global {
   /*
@@ -25,6 +27,7 @@ declare global {
     role: string;
     room: string;
     withEnergyState: boolean;
+    containerId?: string;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -43,6 +46,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   var upgraders = [] as Upgrader[];
   var builders = [] as Builder[];
   var repairers = [] as Repairer[];
+  var staticMiners = [] as StaticMiner[];
+  var haulers = [] as Hauler[];
   // console.log(`Current game tick is ${Game.time}`);
 
   // Automatically delete memory of missing creeps
@@ -59,13 +64,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
     if (role === ROLES.UPGRADER) upgraders.push(new Upgrader(Game.creeps[name].id));
     if (role === ROLES.BUILDER) builders.push(new Builder(Game.creeps[name].id));
     if (role === ROLES.REPAIRER) repairers.push(new Repairer(Game.creeps[name].id));
+    if (role === ROLES.STATIC_MINER) staticMiners.push(new StaticMiner(Game.creeps[name].id));
+    if (role === ROLES.HAULER) haulers.push(new Hauler(Game.creeps[name].id));
   }
 
   for (const name in Game.rooms) {
     const room = Game.rooms[name];
     var spawns = room.find(FIND_MY_SPAWNS);
     spawns.forEach(spawn => {
-      new MySpawn(spawn.id, miners, upgraders, builders, repairers);
+      new MySpawn(spawn.id, miners, upgraders, builders, repairers, staticMiners, haulers);
     });
   }
 });
